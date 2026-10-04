@@ -1,8 +1,0 @@
-receiving incremental file list
-./
-brewdomain.org/
-nginx.files/
-server-stats/
-
-sent 130 bytes  received 1,421 bytes  3,102.00 bytes/sec
-total size is 1,218,821  speedup is 785.83
