@@ -1,0 +1,7 @@
+ytdlp -a ~/Documents/ytdlp.
+txt -S "res:1080,fps:60" --rate-limit 4M --sleep-interval 32 -o "%(playlist_titl
+e)s/%(title)s.%(ext)s" --cookies-from-browser firefox --impersonate ""
+
+Export to Playlist: -o "%(playlist_title)s/%(title)s.%(ext)s"
+
+Audio: yt-dlp -x --audio-format mp3 "URL"
