@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# Format colors
+TEXT_RESET='\033[0m'
+TEXT_CYAN='\033[0;36m'
+TEXT_YELLOW='\033[1;33m'
+TEXT_RED='\033[0;31m'
+
+# 1. Display System Load
+read -r load_1 load_5 load_15 rest < /proc/loadavg
+echo -e "${TEXT_CYAN}System Load (1/5/15 min):${TEXT_RESET}"
+echo -e "  ${load_1}  ${load_5}  ${load_15}"
+echo ""
+
+# 2. Display Hardware Temperatures
+echo -e "${TEXT_CYAN}Hardware Temperatures:${TEXT_RESET}"
+
+sensors | grep -E 'Core |Package id' | while read -r line; do
+    # Extract label (everything before the colon)
+    label=$(echo "$line" | awk -F: '{print $1}')
+    
+    # Extract the temperature string cleanly (e.g., +55.0°C)
+    temp=$(echo "$line" | awk -F: '{print $2}' | awk '{print $1}')
+    
+    # Isolate numeric value for threshold warnings (strips +, .0, °C)
+    temp_num=$(echo "$temp" | grep -oP '\d+' | head -n 1)
+
+    # Apply color coding based on severity
+    if [ "$temp_num" -ge 80 ]; then
+        COLOR=$TEXT_RED
+    elif [ "$temp_num" -ge 65 ]; then
+        COLOR=$TEXT_YELLOW
+    else
+        COLOR=$TEXT_RESET
+    fi
+
+    printf "  %-15s : %b%s%b\n" "$label" "$COLOR" "$temp" "$TEXT_RESET"
+done
+echo ""
