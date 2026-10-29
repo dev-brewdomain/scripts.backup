@@ -5,7 +5,7 @@
 # ==========================================
 INPUT_FILE="/home/auston01/Documents/ytdlp.scripts/ytdlp.txt"
 DOWNLOAD_DIR="/mnt/SUPRAIDZ0.NFS/YT.Archive/"
-EMAIL="austonbrovitch@gmail.com"
+EMAIL=""
 
 # LOG FILE CONFIGURATION
 LOG_FILE="$DOWNLOAD_DIR/download_errors.log"

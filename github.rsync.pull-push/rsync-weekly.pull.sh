@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # --- Configuration ---
-EMAIL="austonbrovitch@gmail.com"
+EMAIL=""
 HOSTNAME=$(hostname)
 BACKUP_DIR="/mnt/SUPRAIDZ0.NFS/Webserver.Backups.2026"
 REPORT=""

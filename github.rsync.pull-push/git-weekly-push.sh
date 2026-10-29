@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # --- Configuration ---
-EMAIL="austonbrovitch@gmail.com"
+EMAIL=""
 HOSTNAME=$(hostname)
 REPORT=""
 
