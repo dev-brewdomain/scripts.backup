@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# Temporary file to build the MOTD snippet
+TEMP_MOTD="/etc/update-motd.d/99-system-temp"
+
+# Function to get temperatures
+get_temperatures() {
+    echo "=== System Temperatures ==="
+    if command -v sensors &> /dev/null; then
+        # Use lm-sensors if installed
+        sensors | grep -E "Core|CPU|Package|temp1" | sed 's/^[ \t]*//'
+    elif [ -d /sys/class/thermal ]; then
+        # Fallback to sysfs thermal zones
+        for zone in /sys/class/thermal/thermal_zone*; do
+            if [ -f "$zone/temp" ] && [ -f "$zone/type" ]; then
+                local type=$(cat "$zone/type")
+                local temp=$(cat "$zone/temp")
+                local temp_c=$((temp / 1000))
+                local temp_f=$(( (temp_c * 9/5) + 32 ))
+                printf "%-15s: %d°C (%d°F)\n" "$type" "$temp_c" "$temp_f"
+            fi
+        done
+    else
+        echo "No temperature sensors found or lm-sensors not installed."
+    fi
+    echo "==========================="
+}
+
+# If running on Ubuntu/Debian with dynamic MOTD, you can output directly 
+# or write it to a dynamic motd script file.
+get_temperatures

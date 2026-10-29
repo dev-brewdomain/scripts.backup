@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# Get system load averages
+read one five fifteen rest < /proc/loadavg
+
+# Get memory usage with fallback for older kernels lacking MemAvailable
+mem_total_kb=$(awk '/MemTotal:/ {print $2}' /proc/meminfo)
+mem_avail_kb=$(awk '/MemAvailable:/ {print $2}' /proc/meminfo)
+
+if [ -z "$mem_avail_kb" ]; then
+    # Fallback for older kernels: Free + Buffers + Cached
+    mem_free_kb=$(awk '/MemFree:/ {print $2}' /proc/meminfo)
+    buffers_kb=$(awk '/Buffers:/ {print $2}' /proc/meminfo)
+    cached_kb=$(awk '/^Cached:/ {print $2}' /proc/meminfo)
+    mem_avail_kb=$((mem_free_kb + buffers_kb + cached_kb))
+fi
+
+mem_total=$((mem_total_kb / 1024))
+mem_used=$(((mem_total_kb - mem_avail_kb) / 1024))
+mem_free=$((mem_avail_kb / 1024))
+
+mem_perc=$(awk -v total="$mem_total_kb" -v avail="$mem_avail_kb" 'BEGIN {printf "%.1f", ((total - avail) / total) * 100}')
+
+# Get disk usage for root partition
+disk_total=$(df -h / | awk 'NR==2 {print $2}')
+disk_used=$(df -h / | awk 'NR==2 {print $3}')
+disk_perc=$(df -h / | awk 'NR==2 {print $5}')
+
+# Get uptime
+uptime_string=$(uptime -p | sed 's/up //')
+
+echo "--------------------------------------------------"
+echo " System Information:"
+echo "    Uptime:          $uptime_string"
+echo "    System Load:     $one (1m), $five (5m), $fifteen (15m)"
+echo "    Memory Usage:    ${mem_used}MB / ${mem_total}MB (${mem_perc}%)"
+echo "    Root Disk Usage: $disk_used / $disk_total ($disk_perc)"
+echo "    Logged in users: $(users | wc -w)"
+echo "--------------------------------------------------"
